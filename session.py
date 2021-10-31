@@ -12,32 +12,50 @@ class DateBase():
         """Принимает запрос (строкой)"""
         try:
             # Подключение к существующей базе данных
-            connection = psycopg2.connect(user="postgres",
-                                        password="123",
+            self.connection = psycopg2.connect(user="postgres",
+                                        password="postgres",
                                         host="127.0.0.1",
                                         port="5432",
-                                        database="dbekaterina")
+                                        database="ekaterinadb")
             # Курсор для выполнения операций с базой данных
-            self.sess = connection.cursor()
+            self.sess = self.connection.cursor()
 
             #собсна выполнение запроса
             
             if param=="select":
                 self.sess.execute(request)
                 response = self.sess.fetchone()
+                return response
             if param=="insert":
                 self.sess.execute(request)
-                connection.commit()
-            return response
+                self.connection.commit()
+            
 
         except (Exception, Error) as error:
             print("Ошибка при работе с PostgreSQL", error)
             return err
 
         finally:
-            if connection:
+            if self.connection:
                 self.sess.close()
-                connection.close()
+                self.connection.close()
+                print("Соединение с PostgreSQL закрыто")
+    
+    def open(self):
+        # Подключение к существующей базе данных
+        connection = psycopg2.connect(user="postgres",
+                                    password="postgres",
+                                    host="127.0.0.1",
+                                    port="5432",
+                                    database="ekaterinadb")
+        # Курсор для выполнения операций с базой данных
+        self.connect = connection.cursor()
+        return self.connect
+
+    def close(self):
+        if self.connection:
+                self.sess.close()
+                self.connection.close()
                 print("Соединение с PostgreSQL закрыто")
 
 
